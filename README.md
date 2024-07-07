@@ -4,7 +4,7 @@
 
 
 2.Login Page
-![login](https://github.com/AbhinavDugyala/MyNoteBook_App/assets/111406323/2a353d30-a1cf-4c22-a93d-2f9c14710e34)
+![Screenshot 2024-07-07 142111](https://github.com/AbhinavDugyala/MyNoteBook_App/assets/111406323/5d07f9b9-c1ea-4f43-9650-65fd4ee07c4c)
 
 
 3.Register Page
