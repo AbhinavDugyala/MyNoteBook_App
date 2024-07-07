@@ -41,12 +41,12 @@
 
 ---->To Run the Frontend Folder
 
-C:\user>cd Frontend>cd src>npm install
+C:\user>cd MyNoteBook>cd Frontend>cd src>npm install
 
-C:\user>cd Frontend>cd src>npm start
+C:\user>cd MyNoteBook>cd Frontend>cd src>npm start
 
 ---->To Run the Backend Folder
 
-C:\user>cd Backend>npm install
+C:\user>cd MyNoteBook>cd Backend>npm install
 
-C:\user>cd Backend>node index.js
+C:\user>cd MyNoteBook>cd Backend>node index.js
