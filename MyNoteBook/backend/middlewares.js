@@ -1,17 +1,16 @@
 require('dotenv').config()
 
-const jwt = require('jsonwebtoken');
-const {userSchema, userSchemaLogin, newNoteSchema} = require('./joiSchema')
+const { userSchema, userSchemaLogin, newNoteSchema } = require('./joiSchema')
 const ExpressError = require('./utils/ExpressError')
+const { verifyToken } = require('./utils/token')
 
 module.exports.validateUserRegister = (req, res, next) => {
     const { error } = userSchema.validate(req.body)
     if (error) {
         const msg = error.details.map(el => el.message).join(', ')
         throw new ExpressError(msg, 400)
-    } else {
-        next()
     }
+    next()
 }
 
 module.exports.validateUserLogin = (req, res, next) => {
@@ -19,30 +18,29 @@ module.exports.validateUserLogin = (req, res, next) => {
     if (error) {
         const msg = error.details.map(el => el.message).join(', ')
         throw new ExpressError(msg, 400)
-    } else {
-        next()
     }
+    next()
 }
 
 module.exports.fetchUser = (req, res, next) => {
-    // Get user from jwt token and add id to req object
     const token = req.header('auth-token')
-    if (token) {
-        const data = jwt.verify(token, 'b0742345623214e7f5aac75a4200799d80b55d26a62b97cd23015c33ae3ac11513e2e7')
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Please sign in to continue' })
+    }
+    try {
+        const data = verifyToken(token)
         req.user = data.user
         next()
-    } else {
-        res.status(401).json({message: "Please authenticate with a valid Token"})  //401 acess denied
+    } catch (err) {
+        return res.status(401).json({ success: false, message: 'Session expired. Please sign in again.' })
     }
 }
 
-module.exports.validateNewNote = (req,res, next) => {
+module.exports.validateNewNote = (req, res, next) => {
     const { error } = newNoteSchema.validate(req.body)
     if (error) {
         const msg = error.details.map(el => el.message).join(', ')
-        console.log(msg);
         throw new ExpressError(msg, 400)
-    } else {
-        next()
     }
+    next()
 }

@@ -1,86 +1,103 @@
-import React, { useContext, useEffect } from 'react'
-import { NoteContext } from '../context/notes/NoteContext';
-import { TextField, Button } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link, useNavigate } from "react-router-dom";
-import "../styles/home.css"
-import Navbar from "./Navbar";
-import { AlertContext } from '../context/AlertContext';
-import {useFormik} from 'formik'
-import * as Yup from 'yup';
+import React, { useContext, useState } from 'react'
+import { NoteContext } from '../context/notes/NoteContext'
+import { TextField, Button } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { Link, useNavigate } from 'react-router-dom'
+import { AlertContext } from '../context/AlertContext'
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
+import Layout from './Layout'
+import '../styles/home.css'
 
-function FormValidations() {
+function AddNote() {
     const { add } = useContext(NoteContext)
     const navigate = useNavigate()
     const { showAlert } = useContext(AlertContext)
-
-    useEffect(() => {
-        if (localStorage.getItem('token')) {
-            console.log("yoooo")
-        } else {
-            navigate('/login')
-            showAlert("You need to signed in first", "error")
-        }
-        // eslint-disable-next-line
-    }, [])
+    const [saving, setSaving] = useState(false)
 
     const noteSchema = Yup.object().shape({
-        title: Yup.string().min(3).required(),
-        description: Yup.string().min(3).required(),
-        tag: Yup.string().min(3).required(),
+        title: Yup.string().min(3, 'Title should be at least 3 characters').required('Title is required'),
+        description: Yup.string().min(3, 'Description should be at least 3 characters').required('Description is required'),
+        tag: Yup.string().min(3, 'Tag should be at least 3 characters').required('Tag is required'),
     })
 
     const formik = useFormik({
         initialValues: {
-            title: "",
-            description: "",
-            tag: "",
+            title: '',
+            description: '',
+            tag: 'General',
         },
         validationSchema: noteSchema,
-        onSubmit: (values) => {
-            add(values)
-            navigate('/')
-            showAlert(`Created note ${values.title} successfully`, "success")
+        onSubmit: async (values) => {
+            setSaving(true)
+            try {
+                await add(values)
+                showAlert(`Created “${values.title}”`, 'success')
+                navigate('/')
+            } catch (err) {
+                showAlert(err.message || 'Could not save this note', 'error')
+            } finally {
+                setSaving(false)
+            }
         }
     })
 
-    const { errors, touched, handleSubmit, getFieldProps } = formik;
+    const { errors, touched, handleSubmit, getFieldProps } = formik
 
     return (
-        <div>
-            <Navbar />
-            <div className="container mt-4 addnotes" >
-                <Button className="mb-4" variant="text" color="secondary" startIcon={<ArrowBackIcon />} component={Link} to="/" style={{ textTransform: "none", fontFamily: "'Poppins', sans-serif" }}>Home</Button>
-                <h2 style={{ fontWeight: "Bold" }}>Create new Note</h2>
-                <p className="mb-4">Add  a new note with your info / notes</p>
-                <form autoComplete="off" noValidate onSubmit={handleSubmit} >
-                    <div className="title mb-4">
-                        <TextField 
-                        {...getFieldProps('title')} 
-                        error={Boolean(touched.title && errors.title)} 
-                        helperText={touched.title && errors.title}  
-                        color="secondary" 
-                        label="Title" variant="outlined" fullWidth   />
-                    </div>
-                    <div className="description mb-4">
-                        <TextField 
-                        {...getFieldProps('description')} 
-                        error={Boolean(touched.description && errors.description)} 
+        <Layout>
+            <div className="container form-page">
+                <Button className="mb-3" variant="text" color="secondary" startIcon={<ArrowBackIcon />} component={Link} to="/" style={{ textTransform: 'none', fontFamily: "'Poppins', sans-serif" }}>
+                    Back to notes
+                </Button>
+                <h1>Create a new note</h1>
+                <p className="form-lead">Give it a clear title and a tag so you can find it later.</p>
+                <form autoComplete="off" noValidate onSubmit={handleSubmit} className="note-form">
+                    <TextField
+                        {...getFieldProps('title')}
+                        error={Boolean(touched.title && errors.title)}
+                        helperText={touched.title && errors.title}
+                        color="secondary"
+                        label="Title"
+                        variant="outlined"
+                        fullWidth
+                    />
+                    <TextField
+                        {...getFieldProps('description')}
+                        error={Boolean(touched.description && errors.description)}
                         helperText={touched.description && errors.description}
-                         color="secondary" label="Description" variant="outlined" fullWidth   />
-                    </div>
-                    <div className="tags mb-4">
-                        <TextField 
-                        {...getFieldProps('tag')} 
+                        color="secondary"
+                        label="Description"
+                        variant="outlined"
+                        fullWidth
+                        multiline
+                        minRows={6}
+                    />
+                    <TextField
+                        {...getFieldProps('tag')}
                         error={Boolean(touched.tag && errors.tag)}
                         helperText={touched.tag && errors.tag}
-                        color="secondary" label="Tags" variant="outlined" fullWidth />
-                    </div>
-                    <Button type="submit" fullWidth size="large" className="mb-4" variant="contained" color="secondary" style={{ textTransform: "none", fontFamily: "'Poppins', sans-serif", fontSize: "1.1rem" }}>Add Note</Button>
+                        color="secondary"
+                        label="Tag"
+                        variant="outlined"
+                        fullWidth
+                        placeholder="Study, Work, Personal…"
+                    />
+                    <Button
+                        type="submit"
+                        disabled={saving}
+                        fullWidth
+                        size="large"
+                        variant="contained"
+                        color="secondary"
+                        style={{ textTransform: 'none', fontFamily: "'Poppins', sans-serif", fontSize: '1.05rem' }}
+                    >
+                        {saving ? 'Saving…' : 'Add note'}
+                    </Button>
                 </form>
             </div>
-        </div>
+        </Layout>
     )
 }
 
-export default FormValidations
+export default AddNote

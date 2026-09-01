@@ -1,29 +1,31 @@
-// node mailer allows you to send email
-const nodemailer = require('nodemailer');
-require('dotenv').config()
+const nodemailer = require('nodemailer')
 
 const sendEmail = (options) => {
-    const transporter = nodemailer.createTransport({
-        service: process.env.EMAIL_SERVICE,
-        auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD,
+    return new Promise((resolve, reject) => {
+        if (!process.env.EMAIL_USERNAME || !process.env.EMAIL_PASSWORD) {
+            const err = new Error('Email is not configured')
+            err.code = 'EMAIL_NOT_CONFIGURED'
+            reject(err)
+            return
         }
-    })
 
-    const mailOptions = {
-        from: process.env.EMAIL_FROM,
-        to:  options.to,
-        subject: options.subject,
-        html: options.text,
-    }
+        const transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SERVICE || 'gmail',
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
+            }
+        })
 
-    transporter.sendMail(mailOptions, (err,info) => {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log(info)
-        }
+        transporter.sendMail({
+            from: process.env.EMAIL_FROM || process.env.EMAIL_USERNAME,
+            to: options.to,
+            subject: options.subject,
+            html: options.text,
+        }, (err, info) => {
+            if (err) reject(err)
+            else resolve(info)
+        })
     })
 }
 

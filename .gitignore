@@ -1,0 +1,8 @@
+node_modules/
+MyNoteBook/frontend/node_modules/
+MyNoteBook/backend/node_modules/
+MyNoteBook/frontend/build/
+.env
+MyNoteBook/backend/.env
+MyNoteBook/backend/data/
+.DS_Store

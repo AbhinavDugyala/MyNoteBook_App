@@ -87,7 +87,7 @@ const userSchema = new Schema({
         sparse: true,
     },
     resetPasswordToken: String,
-    resetPasswordExpire: String,
+    resetPasswordExpire: Date,
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {

@@ -1,132 +1,101 @@
-// import React, { useContext, useEffect, } from 'react'
-// import { NoteContext } from '../context/notes/NoteContext';
-// import NoteItem from './NoteItem';
-// import empty from '../images/empty.svg'
-// import { useNavigate } from "react-router-dom";
-// import { AlertContext } from '../context/AlertContext';
-
-
-// function Notes() {
-
-//     const { notes, getNotes } = useContext(NoteContext)
-//     const navigate = useNavigate()
-//     const { showAlert } = useContext(AlertContext)
-
-//     useEffect(() => {
-//         if (localStorage.getItem('token')) {
-//             getNotes()
-//             console.log(notes)
-//         } else {
-//             navigate('/about')
-//             showAlert("You need to signed in first", "error")
-//         }
-//         // eslint-disable-next-line
-//     }, [])
-
-//     return (
-//         <div className="row ps-5 mt-4 mb-1">
-//             <h1 className="display-6">Your Notes: </h1>
-//             {notes.length === 0 && 
-//             <div className="d-flex ">
-//                 <p style={{position: "absolute", left: "35%", bottom: "-10%"}}>Create your first note :) !!!!!</p>
-//                 <img className="img-fluid ms-5 mt-3" src={empty} alt="empty" style={{width: "30%", opacity: "0.5"}} />
-//             </div>
-//             }
-//             {notes.map(note => 
-//                 <NoteItem key={note._id} note={note} />
-//             )}
-//         </div>
-//     )
-// }
-
-// export default Notes
-
-// import React, { useContext, useEffect } from 'react';
-// import { NoteContext } from '../context/notes/NoteContext';
-// import NoteItem from './NoteItem';
-// import empty from '../images/empty.png';
-// import empty1 from '../images/empty1.png';
-// import empty3 from '../images/empty3.jpeg';
-// import { useNavigate } from "react-router-dom";
-// import { AlertContext } from '../context/AlertContext';
-
-// function Notes() {
-//     const { notes, getNotes } = useContext(NoteContext);
-//     const navigate = useNavigate();
-//     const { showAlert } = useContext(AlertContext);
-
-//     useEffect(() => {
-//         if (localStorage.getItem('token')) {
-//             getNotes();
-//             console.log(notes);
-//         } else {
-//             navigate('/about');
-//             showAlert("You need to sign in first", "error");
-//         }
-//         // eslint-disable-next-line
-//     }, []);
-
-//     return (
-//         <div className="row ps-5 mt-4 mb-1">
-//             <h1 className="display-6">Your Notes: </h1>
-//             {(!Array.isArray(notes) || notes.length === 0) && 
-//             <div className="d-flex ">
-//                 <p style={{ position: "absolute", left: "35%", bottom: "-10%" }}>Create your first note :) !!!!!</p>
-//                 <img className="img-fluid ms-5 mt-3" src={empty} alt="empty" style={{ width: "30%", opacity: "1.0" }} />
-//                 <img className="img-fluid ms-5 mt-3" src={empty3} alt="empty" style={{ width: "30%", opacity: "1.0" }} />
-//                 <img className="img-fluid ms-5 mt-3" src={empty1} alt="empty" style={{ width: "30%", opacity: "1.0" }} />
-//             </div>
-//             }
-//             {Array.isArray(notes) && notes.map(note => 
-//                 <NoteItem key={note._id} note={note} />
-//             )}
-//         </div>
-//     );
-// }
-
-// export default Notes;
-
-import React, { useContext, useEffect } from 'react';
-import { NoteContext } from '../context/notes/NoteContext';
-import NoteItem from './NoteItem';
-import empty from '../images/empty.png';
-import empty1 from '../images/empty1.png';
-import empty3 from '../images/empty3.jpeg';
-import { useNavigate } from "react-router-dom";
-import { AlertContext } from '../context/AlertContext';
+import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Button, CircularProgress, TextField } from '@mui/material'
+import { NoteContext } from '../context/notes/NoteContext'
+import NoteItem from './NoteItem'
 
 function Notes() {
-    const { notes, getNotes } = useContext(NoteContext);
-    const navigate = useNavigate();
-    const { showAlert } = useContext(AlertContext);
+    const { notes, getNotes, loading } = useContext(NoteContext)
+    const [query, setQuery] = useState('')
+    const [activeTag, setActiveTag] = useState('All')
 
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            getNotes();
-        } else {
-            navigate('/about');
-            showAlert("You need to sign in first", "error");
-        }
-        // eslint-disable-next-line
-    }, []);
+        getNotes()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const list = useMemo(() => (Array.isArray(notes) ? notes : []), [notes])
+    const tags = useMemo(() => {
+        const unique = Array.from(new Set(list.map(note => note.tag).filter(Boolean)))
+        return ['All', ...unique]
+    }, [list])
+
+    const visible = list.filter((note) => {
+        const haystack = `${note.title || ''} ${note.description || ''} ${note.tag || ''}`.toLowerCase()
+        const matchesQuery = haystack.includes(query.trim().toLowerCase())
+        const matchesTag = activeTag === 'All' || note.tag === activeTag
+        return matchesQuery && matchesTag
+    })
 
     return (
-        <div className="row ps-5 mt-4 mb-1">
-            <h1 className="display-6">Your Notes: </h1>
-            {(!Array.isArray(notes) || notes.length === 0) && 
-                <div className="d-flex">
-                    <p style={{ position: "absolute", left: "35%", bottom: "-10%" }}>Create your first note :) !!!</p>
-                    <img className="img-fluid ms-5 mt-3" src={empty} alt="empty" style={{ width: "30%", opacity: "1.0" }} />
-                    <img className="img-fluid ms-5 mt-3" src={empty3} alt="empty" style={{ width: "30%", opacity: "1.0" }} />
-                    <img className="img-fluid ms-5 mt-3" src={empty1} alt="empty" style={{ width: "30%", opacity: "1.0" }} />
+        <section className="notes-section">
+            <div className="notes-toolbar">
+                <div>
+                    <h2>Your notes</h2>
+                    <p className="notes-count">{list.length} saved {list.length === 1 ? 'note' : 'notes'}</p>
                 </div>
-            }
-            {Array.isArray(notes) && notes.map(note => 
-                <NoteItem key={note._id} note={note} />
+                <TextField
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    label="Search notes"
+                    variant="outlined"
+                    color="secondary"
+                    size="small"
+                    className="notes-search"
+                />
+            </div>
+
+            {tags.length > 1 && (
+                <div className="tag-row" role="tablist" aria-label="Filter by tag">
+                    {tags.map(tag => (
+                        <button
+                            key={tag}
+                            type="button"
+                            className={`tag-chip ${activeTag === tag ? 'is-active' : ''}`}
+                            onClick={() => setActiveTag(tag)}
+                        >
+                            {tag}
+                        </button>
+                    ))}
+                </div>
             )}
-        </div>
-    );
+
+            {loading && (
+                <div className="notes-loading">
+                    <CircularProgress color="secondary" size={32} />
+                    <span>Fetching your notes…</span>
+                </div>
+            )}
+
+            {!loading && visible.length === 0 && (
+                <div className="empty-state">
+                    <h3>{list.length === 0 ? 'Your notebook is empty' : 'No notes match that search'}</h3>
+                    <p>
+                        {list.length === 0
+                            ? 'Write your first note and it will show up here, tagged and ready to edit.'
+                            : 'Try another keyword or clear the tag filter.'}
+                    </p>
+                    {list.length === 0 && (
+                        <Button
+                            component={Link}
+                            to="/new"
+                            variant="contained"
+                            color="secondary"
+                            style={{ color: 'white', textTransform: 'none', fontFamily: "'Poppins', sans-serif" }}
+                        >
+                            Create your first note
+                        </Button>
+                    )}
+                </div>
+            )}
+
+            <div className="row notes-grid">
+                {visible.map(note => (
+                    <NoteItem key={note._id} note={note} />
+                ))}
+            </div>
+        </section>
+    )
 }
 
-export default Notes;
-
+export default Notes
