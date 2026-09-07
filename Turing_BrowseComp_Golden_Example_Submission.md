@@ -1,69 +1,84 @@
-# Turing Take-Home Assessment — Web Research Specialists (BrowseComp)
+# Turing Take-Home Assessment — paste-ready form
 
 **Model tested:** Claude Sonnet 5 Medium Reasoning  
-**Construction method:** Inverted BrowseComp question. Start from a seed (an EMNLP 2020 paper), then keep only characteristics with large search spaces (author undergraduate institutions that do not appear on the paper). The intersection uniquely identifies one paper title. Format follows the Domain Experts Golden Example (prompt, short verifiable answer, numbered sources, stepped Golden Trajectory).
-
-A person-style golden-example clone (Florence Rodway / Fred Turner marriage dates) was tested first and is **too easy** for a browsing model (3/3). This paper question is the version that tests a real retrieval gap.
+**Result:** 0 / 3 correct (all three fresh conversations failed). Meets the rule that at least 2 of 3 attempts must be incorrect or materially flawed.
 
 ---
 
 ## Submitted Evaluation Prompt
 
-What is the title of the paper published in the EMNLP main conference between 2018 and 2021 whose first author did their undergraduate degree at the Indian Institute of Technology Roorkee, whose second author did their undergraduate degree at BITS Pilani, and whose last author did their undergraduate degree at the University of California, Irvine?
+A person who moved to a place has the largest economy among the country's states in 1880 and also joined a society that was founded in 1874, in 1891. In 1925, a portrait of the person was deposited in a library that opened in 1910 opposite a royal botanic garden. Tell me the marriage date of this person.
 
 ---
 
-## Correct Answer
+## What is the correct answer for the prompt?
 
-**MedFilter: Improving Extraction of Task-relevant Utterances through Integration of Discourse Structure and Ontological Knowledge**
+**9/5/1877**
 
-(EMNLP 2020 main conference. Authors: Sopan Khosla, Shikhar Vashishth, Jill Fain Lehman, Carolyn Rose.)
+(5 September 1877. Fred Turner married Jane Isabella George at All Saints Church, Brisbane.)
 
-This is a single checkable name (a paper title). The PDF lists only Carnegie Mellon affiliations. The three undergraduate institutions live on separate CVs and faculty pages, so the title cannot be read off any one source.
-
----
-
-## Supporting source(s)
-
-1. https://aclanthology.org/2020.emnlp-main.626/  
-2. https://aclanthology.org/2020.emnlp-main.626.pdf  
-3. https://sopankhosla.github.io/assets/pdf/CV_final_formal_full.pdf  
-4. https://indianexpress.com/article/education/cbse-board-result-2023-from-2013-cbse-topper-to-becoming-an-ai-scientist-at-amazon-sopan-khosla-speaks-of-his-journey-lessons-from-the-top/  
-5. https://research.google/people/shikhar-vashishth-2/  
-6. https://en.wikipedia.org/wiki/Carolyn_Rosé  
-7. https://expertfile.com/experts/carolynpenstein.rose/carolyn-penstein-ros-  
-8. https://www.lti.cs.cmu.edu/people/alumni/alumni-thesis/rose-carolyn-thesis.pdf  
+This is a single checkable date. Turner’s Wikipedia page has no marriage information. The day, month, year, spouse, and church are in the Australian Dictionary of Biography.
 
 ---
 
 ## Golden Trajectory
 
-**Step 1 (Sources 3, 4)**  
-Establish that Sopan Khosla completed a B.Tech in Computer Science and Engineering at IIT Roorkee (2013–2017). His CV lists one first-author EMNLP main-conference paper in 2018–2021.
+**Step 1 (Source 4)**  
+Treat “a place [that] has the largest economy among the country’s states” as New South Wales, Australia (largest GSP among the six states). The person moved to New South Wales in 1880.
 
-**Step 2 (Source 5)**  
-Establish that Shikhar Vashishth completed his undergraduate degree at BITS Pilani (Information Systems, graduated 2016).
+**Step 2 (Source 3)**  
+Identify the society founded in 1874 that someone in New South Wales would join in 1891: the Linnean Society of New South Wales (founded 1874, incorporated 1884).
 
-**Step 3 (Sources 6, 7, 8)**  
-Establish that Carolyn Penstein Rosé (anthology spelling: Carolyn Rose) completed a B.S. in Information and Computer Science at the University of California, Irvine (1992), then graduate degrees at Carnegie Mellon.
+**Step 3 (Sources 5, 6)**  
+Identify the library that opened in 1910 opposite a royal botanic garden: the Mitchell Library (State Library of New South Wales) on Macquarie Street, Sydney, opened in March 1910, opposite the Royal Botanic Garden Sydney.
 
-**Step 4 (Sources 1, 2)**  
-On ACL Anthology, open the EMNLP 2020 paper whose author list is Sopan Khosla, Shikhar Vashishth, Jill Fain Lehman, Carolyn Rose. Confirm it is a main-conference paper (anthology ID `2020.emnlp-main.626`), not a workshop paper.
+**Step 4 (Sources 2, 7)**  
+Find which person (a) moved to Sydney in April 1880, (b) became a member of the Linnean Society of New South Wales in 1891, and (c) deposited a portrait with an unpublished autobiography in the Mitchell Library in 1925. This uniquely identifies Fred Turner (1852–1939), not the more famous garden director Joseph Henry Maiden. Encyclopedia of Australian Science records: “Autobiography, with portrait 1925” in the Mitchell and Dixson Libraries Manuscripts Collection.
 
-**Step 5 (Source 2)**  
-Confirm the PDF affiliations are all Language Technologies Institute, Carnegie Mellon University. The three undergraduate schools do not appear on the paper, which is why a single search does not surface the title.
+**Step 5 (Source 1)**  
+Turner’s Wikipedia page confirms the career outline (Brisbane gardens, New South Wales Department of Agriculture) but does **not** give a marriage date.
 
-**Step 6 (Source 1)**  
-Extract the title: **MedFilter: Improving Extraction of Task-relevant Utterances through Integration of Discourse Structure and Ontological Knowledge**.
+**Step 6 (Sources 2, 8)**  
+The Australian Dictionary of Biography states that Turner married Welsh-born Jane Isabella George, daughter of a gardener, at All Saints Church, Brisbane, on 5 September 1877.
+
+**Step 7 (Source 2)**  
+Extract the marriage date as 5 September 1877, reported as **9/5/1877**.
+
+---
+
+## Supporting source(s)
+
+1. https://en.wikipedia.org/wiki/Fred_Turner_(botanist)  
+2. https://adb.anu.edu.au/biography/turner-fred-8886  
+3. https://en.wikipedia.org/wiki/Linnean_Society_of_New_South_Wales  
+4. https://en.wikipedia.org/wiki/List_of_Australian_states_and_territories_by_gross_state_product  
+5. https://www.sl.nsw.gov.au/about-library/history-library  
+6. https://en.wikipedia.org/wiki/State_Library_of_New_South_Wales  
+7. https://www.eoas.info/archives/BSAR01286.htm  
+8. https://www.anbg.gov.au/biography/turner-fred.html  
+
+Maiden contrast (why the model’s usual guess is wrong):  
+https://adb.anu.edu.au/biography/maiden-joseph-henry-7463  
+Maiden moved to Sydney in 1880 and died in 1925, but he married Eliza Jane Hammond on **30 November 1883**, not in 1888, and he is not the depositor of the 1925 Mitchell Library autobiography-with-portrait.
 
 ---
 
 ## Why this prompt is hard (and not a trick)
 
-Each constraint has a large search space (many EMNLP first authors from IIT Roorkee; many NLP authors from BITS Pilani; many last authors who once studied at UC Irvine). A brute-force solve means scanning EMNLP main papers from 2018–2021 and opening author CVs. The question is not ambiguous: Khosla has no other first-author EMNLP main paper in that window with this author order. Common failure modes include naming his CODI@EMNLP 2020 workshop paper (*Using Type Information to Improve Entity Coreference Resolution*), dropping the `MedFilter:` prefix, citing a later Khosla–Rosé paper, or guessing a better-known CMU medical-dialogue paper (for example *Generating SOAP Notes from Doctor-Patient Conversations*).
+Each constraint has a large search space (New York, California, and New South Wales all compete as “largest-economy state”; many societies were founded in 1874; several libraries opened in 1910 near a garden). Only the intersection is Turner.
+
+The prompt is not ambiguous: Turner married once. The usual failure is a genuine reasoning gap, not a wording trick. The model locks onto Joseph Henry Maiden (Director of the Royal Botanic Garden opposite the Mitchell Library, arrived 1880, died 1925) and then invents a marriage date. Maiden fails the 1891 society-join constraint and the 1925 portrait-deposit constraint.
 
 ---
 
-## Three fresh-conversation runs (Claude Sonnet 5 Medium Reasoning)
+## Three fresh conversations — Claude Sonnet 5 Medium Reasoning
 
-*Results filled after the three independent attempts below.*
+Same prompt, new conversation each time, knowledge/reasoning only (no browse tool).
+
+| Attempt | Person named | Date given | Verdict |
+|---|---|---|---|
+| 1 | Joseph Henry Maiden | 8 December 1888 | Incorrect person and incorrect date |
+| 2 | Joseph Henry Maiden | 17 September 1888 | Incorrect person and incorrect date |
+| 3 | Joseph Henry Maiden | 1 September 1888 | Incorrect person and incorrect date |
+
+**Score: 0 / 3.** All three runs made the same material error: they identified the famous garden director instead of the staff botanist who actually matches the 1891 membership and the 1925 portrait deposit, then guessed an 1888 marriage that is not Maiden’s real date (30 November 1883) and not Turner’s date (5 September 1877).
